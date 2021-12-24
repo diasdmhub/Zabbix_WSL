@@ -33,7 +33,7 @@
 
 ### 001.002 VARIABLES
 ZBXDIR="/opt"
-ZBXVER="zabbix-5.4.8"
+ZBXVER="zabbix-5.4.9"
 ZBXCONF_SV="/usr/local/etc/zabbix_server.conf"
 ZBXCONF_AG="/usr/local/etc/zabbix_agentd.conf"
 
