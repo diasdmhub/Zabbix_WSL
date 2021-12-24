@@ -65,7 +65,7 @@ apt-get -y install wget openssh-server default-mysql-client make
 	RETURN=$?; error_check "001.004"
 
 ### 001.005 CHECK IF ZABBIX DB EXISTS
-if [ -z $(mysql -NB -h${DBHOST} -u${DBUSER} -p${DBPASS} -e "SHOW DATABASES LIKE '${DBNAME}';") ]; then 
+if [ -z "$(mysql -NB -h${DBHOST} -u${DBUSER} -p${DBPASS} -e "SHOW DATABASES LIKE '${DBNAME}';")" ]; then 
 	RETURN=$?; error_check "001.004 - ZABBIX DATABASE WAS NOT FOUND OR ACCESS IS INVALID"
 fi
 
@@ -87,7 +87,7 @@ tar --skip-old-files -C $ZBXDIR/ -xzvf $ZBXDIR/$ZBXVER.tar.gz
 clear_msg "DOWNLOADING AND INSTALLING GO..."
 
 wget -nc -O $GODIR/$GOVER.linux-amd64.tar.gz https://go.dev/dl/$GOVER.linux-amd64.tar.gz
-rm -rf /usr/local/go && tar -C /usr/local -xzvf $GODIR/$GOVER.linux-amd64.tar.gz
+rm -rf /usr/local/go && tar --skip-old-files -C /usr/local -xzvf $GODIR/$GOVER.linux-amd64.tar.gz
 	RETURN=$?; error_check "003.001"
 
 echo -e "\n# GO PATH" >> /etc/profile					# POSSIBLE CLUTTER OF PROFILE FILE
@@ -100,12 +100,16 @@ source /etc/profile
 ### 004.000 ZABBIX DB SCHEMA - START
 clear_msg "CREATING ZABBIX DB SCHEMA..."
 
-mysql -h${DBHOST} -u${DBUSER} -p${DBPASS} ${DBNAME} < $ZBXDIR/$ZBXVER/database/mysql/schema.sql
-	RETURN=$?; error_check "004.001"
-mysql -h${DBHOST} -u${DBUSER} -p${DBPASS} ${DBNAME} < $ZBXDIR/$ZBXVER/database/mysql/images.sql
-	RETURN=$?; error_check "004.002"
-mysql -h${DBHOST} -u${DBUSER} -p${DBPASS} ${DBNAME} < $ZBXDIR/$ZBXVER/database/mysql/data.sql
-	RETURN=$?; error_check "004.003"
+if [ -z "$(mysql -NB -h${DBHOST} -u${DBUSER} -p${DBPASS} ${DBNAME} -e "SHOW TABLES;")" ]; then
+	mysql -h${DBHOST} -u${DBUSER} -p${DBPASS} ${DBNAME} < $ZBXDIR/$ZBXVER/database/mysql/schema.sql
+		RETURN=$?; error_check "004.001"
+	mysql -h${DBHOST} -u${DBUSER} -p${DBPASS} ${DBNAME} < $ZBXDIR/$ZBXVER/database/mysql/images.sql
+		RETURN=$?; error_check "004.002"
+	mysql -h${DBHOST} -u${DBUSER} -p${DBPASS} ${DBNAME} < $ZBXDIR/$ZBXVER/database/mysql/data.sql
+		RETURN=$?; error_check "004.003"
+else
+	echo -e "\nZABBIX DB IS POPULATED - NO CHANGES MADE\n"; sleep 3;
+fi
 ### 004.000 ZABBIX DB SCHEMA - END
 
 
@@ -129,10 +133,17 @@ apt-get install -y gcc default-libmysqlclient-dev libxml2 libxml2-dev libevent-d
 ### 007.000 ZABBIX USER - START
 clear_msg "CREATING ZABBIX USER..."
 
-groupadd --system zabbix
-	RETURN=$?; error_check "007.001"
-useradd --system -g zabbix -d /usr/lib/zabbix -s /sbin/nologin -c "Zabbix Monitoring System" zabbix
-	RETURN=$?; error_check "007.002"
+if [ $(getent group dan) ]; then
+	echo -e "\n007.001 - ZABBIX GROUP ALREADY EXISTS\n"; sleep 3;
+else
+	groupadd --system zabbix
+fi
+
+if [ $(id -nu zabbix) ]; then
+	echo -e "\n007.002 - ZABBIX USER ALREADY EXISTS\n"; sleep 3;
+else
+	useradd --system -g zabbix -d /usr/lib/zabbix -s /sbin/nologin -c "Zabbix Monitoring System" zabbix
+fi
 ### 007.000 ZABBIX USER - END
 
 
