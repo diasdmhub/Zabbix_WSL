@@ -62,11 +62,11 @@ clear_msg "PREPARING OS..."
 
 apt-get -y update && sudo apt-get -y upgrade
 apt-get -y install wget openssh-server default-mysql-client make
+	RETURN=$?; error_check "001.004"
 
 ### 001.005 CHECK IF ZABBIX DB EXISTS
 if [ -z $(mysql -NB -h${DBHOST} -u${DBUSER} -p${DBPASS} -e "SHOW DATABASES LIKE '${DBNAME}';") ]; then 
-	echo -e "\n001.004 - ZABBIX DATABASE WAS NOT FOUND OR ACCESS IS INVALID\n"
-	exit 98
+	RETURN=$?; error_check "001.004 - ZABBIX DATABASE WAS NOT FOUND OR ACCESS IS INVALID"
 fi
 
 ### 001.000 OS ENVIROMENT - END
@@ -90,8 +90,8 @@ wget -nc -O $GODIR/$GOVER.linux-amd64.tar.gz https://go.dev/dl/$GOVER.linux-amd6
 rm -rf /usr/local/go && tar -C /usr/local -xzvf $GODIR/$GOVER.linux-amd64.tar.gz
 	RETURN=$?; error_check "003.001"
 
-echo -e "\n# GO PATH" >> /etc/profile
-echo 'export PATH=$PATH:/usr/local/go/bin' >> /etc/profile
+echo -e "\n# GO PATH" >> /etc/profile					# POSSIBLE CLUTTER OF PROFILE FILE
+echo 'export PATH=$PATH:/usr/local/go/bin' >> /etc/profile		# TO CORRECT LATER
 	RETURN=$?; error_check "003.002 - You need to be \"root\""
 source /etc/profile
 ### 003.000 GO INSTALL - END
@@ -137,6 +137,7 @@ useradd --system -g zabbix -d /usr/lib/zabbix -s /sbin/nologin -c "Zabbix Monito
 
 
 ### 008.000 ZABBIX SOURCES INSTALL - START
+### CHOOSE YOUR ZABBIX FUNCTIONALITIES HERE
 ### IF YOU DO/DON'T NEED DIFFERENT OPTIONS, ADD/REMOVE IT TO THE LINE BELLOW. SEE "./configure --help"
 clear_msg "CONFIGURING ZABBIX INSTALLATION..."
 
@@ -184,8 +185,7 @@ service apache2 restart
 ### 010.000 ZABBIX SERVER CONFIGURATION - START
 clear_msg "AJUSTING ZABBIX SERVER CONFIGURATION FILE..."
 
-#sed -i 's|LogFile=/tmp/zabbix_server.log|#LogFile=/tmp/zabbix_server.log|' $ZBXCONF_SV
-sed -i "s|LogFile=/tmp/zabbix_server.log|#LogFile=/tmp/zabbix_server.log|" $ZBXCONF_SV
+sed -i 's|LogFile=\/tmp\/zabbix_server.log|#LogFile=\/tmp\/zabbix_server.log|' $ZBXCONF_SV
 sed -i "s|DBName=zabbix|#DBName=zabbix|" $ZBXCONF_SV
 sed -i 's|DBUser=zabbix|#DBUser=zabbix|' $ZBXCONF_SV
 sed -i 's|Timeout=4|#Timeout=4|' $ZBXCONF_SV
