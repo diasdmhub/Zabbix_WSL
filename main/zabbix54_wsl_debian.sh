@@ -133,7 +133,7 @@ apt-get install -y gcc default-libmysqlclient-dev libxml2 libxml2-dev libevent-d
 ### 007.000 ZABBIX USER - START
 clear_msg "CREATING ZABBIX USER..."
 
-if [ $(getent group dan) ]; then
+if [ $(getent group zabbix) ]; then
 	echo -e "\n007.001 - ZABBIX GROUP ALREADY EXISTS\n"; sleep 3;
 else
 	groupadd --system zabbix
