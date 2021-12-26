@@ -125,7 +125,7 @@ apt-get install -y apache2 php php-mysql php-gd php-curl php-bcmath php-mbstring
 ### 006.000 ZABBIX SOURCES DEPENDENCIES - START
 clear_msg "INSTALLING ZABBIX DEPENDENCIES..."
 
-apt-get install -y gcc default-libmysqlclient-dev libxml2 libxml2-dev libevent-dev pkg-config snmp libsnmp-dev libssh2-1-dev libldap2-dev libcurl4-openssl-dev libpcre3-dev
+apt-get install -y gcc default-libmysqlclient-dev libxml2 libxml2-dev libevent-dev pkg-config snmp libsnmp-dev libssh2-1-dev libldap2-dev libcurl4-openssl-dev libpcre3-dev unixodbc-dev libopenipmi-dev default-jdk-headless
 	RETURN=$?; error_check "006.001"
 ### 006.000 ZABBIX SOURCES DEPENDENCIES - END
 
@@ -154,18 +154,21 @@ clear_msg "CONFIGURING ZABBIX INSTALLATION..."
 
 cd $ZBXDIR/$ZBXVER/
 ./configure --enable-server \
-			--enable-agent \
-			--enable-agent2 \
-			--enable-webservice \
-			--with-mysql \
-			--enable-ipv6 \
-			--with-net-snmp \
-			--with-libcurl \
-			--with-libxml2 \
-			--with-openssl \
-			--with-ldap \
-			--with-ssh2
-	RETURN=$?; error_check "008.001 - Configuration error. Check \"config.log\"."
+	    --enable-agent \
+	    --enable-agent2 \
+	    --enable-webservice \
+	    --enable-java \
+	    --enable-ipv6 \
+	    --with-mysql \
+	    --with-unixodbc \
+	    --with-openipmi \
+	    --with-net-snmp \
+	    --with-libcurl \
+	    --with-libxml2 \
+	    --with-openssl \
+	    --with-ldap \
+	    --with-ssh2
+	RETURN=$?; error_check "008.001 - Configuration error. Check \"/$ZBXDIR/$ZBXVER/config.log\"."
 
 clear_msg "COMPILING ZABBIX..."
 
