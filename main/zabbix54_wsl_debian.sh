@@ -182,7 +182,7 @@ clear_msg "CONFIGURING ZABBIX FRONTEND..."
 
 mkdir -p /var/www/html/zabbix/
 	RETURN=$?; error_check "009.001"
-cp -a -u $ZBXDIR/$ZBXVER/ui/* /var/www/html/zabbix/
+rsync -av $ZBXDIR/$ZBXVER/ui/* /var/www/html/zabbix/
 	RETURN=$?; error_check "009.002"
 chown -R zabbix:zabbix /var/www/html/zabbix/
 	RETURN=$?; error_check "009.003"
@@ -199,6 +199,8 @@ service apache2 restart
 ### 010.000 ZABBIX SERVER CONFIGURATION - START
 clear_msg "AJUSTING ZABBIX SERVER CONFIGURATION FILE..."
 
+rsync -av $ZBXDIR/$ZBXVER/conf/zabbix_server.conf $ZBXCONF_SV
+
 sed -i 's|^LogFile=\/tmp\/zabbix_server.log|#LogFile=\/tmp\/zabbix_server.log|' $ZBXCONF_SV
 sed -i "s|^DBName=zabbix|#DBName=zabbix|" $ZBXCONF_SV
 sed -i 's|^DBUser=zabbix|#DBUser=zabbix|' $ZBXCONF_SV
@@ -208,8 +210,8 @@ sed -i 's|^StatsAllowedIP=127.0.0.1|#StatsAllowedIP=127.0.0.1|' $ZBXCONF_SV
 sed -i 's|^# Include=/usr/local/etc/zabbix_server.conf.d/\*\.conf|Include=/usr/local/etc/zabbix_server.conf.d/\*\.conf|' $ZBXCONF_SV
 
 if [ -e $ZBXCONF_SV.d/zabbix_server_auto.conf ]; then
-	echo -e "\n\nATENTION - 010.001 - SERVER CONFIGURATION FILE EXISTS. NO CHANGES MADE"
-	echo -e "PLEASE REVIEW YOUR SERVER CONFIGURATION FILE IF UPDATING.\n\n"
+	echo -e "\n\nATENTION - 010.001 - AUTO SERVER CONFIGURATION FILE EXISTS. NO CHANGES MADE"
+	echo -e "PLEASE REVIEW YOUR DEFAULT SERVER CONFIGURATION FILE IF UPDATING.\n\n"
 	sleep 5
 else
 	cat > $ZBXCONF_SV.d/zabbix_server_auto.conf <<- EOF
@@ -239,6 +241,8 @@ fi
 ### 011.000 ZABBIX AGENT CONFIGURATION - START
 clear_msg "AJUSTING ZABBIX AGENT CONFIGURATION FILE..."
 
+rsync -av $ZBXDIR/$ZBXVER/conf/zabbix_agentd.conf $ZBXCONF_AG
+
 sed -i 's|^LogFile=/tmp/zabbix_agentd.log|#LogFile=/tmp/zabbix_agentd.log|' $ZBXCONF_AG
 sed -i 's|^Server=127.0.0.1|#Server=127.0.0.1|' $ZBXCONF_AG
 sed -i 's|^ServerActive=127.0.0.1|#ServerActive=127.0.0.1|' $ZBXCONF_AG
@@ -246,8 +250,8 @@ sed -i 's|^Hostname=Zabbix\ server|#Hostname=Zabbix\ server|' $ZBXCONF_AG
 sed -i 's|^# Include=/usr/local/etc/zabbix_agentd.conf.d/\*\.conf|Include=/usr/local/etc/zabbix_agentd.conf.d/\*\.conf|' $ZBXCONF_AG
 
 if [ -e $ZBXCONF_AG.d/zabbix_agent_auto.conf ]; then
-	echo -e "ATENTION - 011.001 - AGENT CONFIGURATION FILE EXISTS. NO CHANGES MADE"
-	echo -e "PLEASE REVIEW YOUR AGENT CONFIGURATION FILE IF UPDATING.\n\n"
+	echo -e "ATENTION - 011.001 - AUTO AGENT CONFIGURATION FILE EXISTS. NO CHANGES MADE"
+	echo -e "PLEASE REVIEW YOUR DEFAULT AGENT CONFIGURATION FILE IF UPDATING.\n\n"
 	sleep 5
 else
 	cat > $ZBXCONF_AG.d/zabbix_agent_auto.conf <<- EOF
