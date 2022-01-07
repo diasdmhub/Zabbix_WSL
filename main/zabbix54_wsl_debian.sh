@@ -14,9 +14,9 @@
 
 ### LIMITATIONS
 #!!-- MADE FOR DEBIAN BASED WSL DISTRIBUTIONS.
-#!!-- ZABBIX DB MUST BE PREVIOUSLY INSTALLED AND CREATED, BUT NOT POPULATED!
-#!!-- IT IS REQUIRED TO UPDATE ZABBIX AND GO LINKS MANUALLY.
-#!!-- RE-EXECUTION OF THIS SCRIPT MIGHT MESS UP PREVIOUS CONFIGURATION. CROP THE SCRIPT IF NECESSARY.
+#!!-- FOR NEW INSTALLATIONS, ZABBIX DB MUST BE PREVIOUSLY INSTALLED AND CREATED, BUT NOT OPULATED!
+#!!-- RE-EXECUTION OF THIS SCRIPT IS CAPABLE OF UPDATING ZABBIX.
+#!!-- IT IS REQUIRED TO UPDATE MANUALLY ZABBIX AND GO LINKS, AND PHP DIRECTORY
 
 
 ### 001.000 OS ENVIROMENT - START
@@ -199,17 +199,17 @@ service apache2 restart
 ### 010.000 ZABBIX SERVER CONFIGURATION - START
 clear_msg "AJUSTING ZABBIX SERVER CONFIGURATION FILE..."
 
-sed -i 's|LogFile=\/tmp\/zabbix_server.log|#LogFile=\/tmp\/zabbix_server.log|' $ZBXCONF_SV
-sed -i "s|DBName=zabbix|#DBName=zabbix|" $ZBXCONF_SV
-sed -i 's|DBUser=zabbix|#DBUser=zabbix|' $ZBXCONF_SV
-sed -i 's|Timeout=4|#Timeout=4|' $ZBXCONF_SV
-sed -i 's|LogSlowQueries=3000|#LogSlowQueries=3000|' $ZBXCONF_SV
-sed -i 's|StatsAllowedIP=127.0.0.1|#StatsAllowedIP=127.0.0.1|' $ZBXCONF_SV
-sed -i 's|# Include=/usr/local/etc/zabbix_server.conf.d/\*\.conf|Include=/usr/local/etc/zabbix_server.conf.d/\*\.conf|' $ZBXCONF_SV
+sed -i 's|^LogFile=\/tmp\/zabbix_server.log|#LogFile=\/tmp\/zabbix_server.log|' $ZBXCONF_SV
+sed -i "s|^DBName=zabbix|#DBName=zabbix|" $ZBXCONF_SV
+sed -i 's|^DBUser=zabbix|#DBUser=zabbix|' $ZBXCONF_SV
+sed -i 's|^Timeout=4|#Timeout=4|' $ZBXCONF_SV
+sed -i 's|^LogSlowQueries=3000|#LogSlowQueries=3000|' $ZBXCONF_SV
+sed -i 's|^StatsAllowedIP=127.0.0.1|#StatsAllowedIP=127.0.0.1|' $ZBXCONF_SV
+sed -i 's|^# Include=/usr/local/etc/zabbix_server.conf.d/\*\.conf|Include=/usr/local/etc/zabbix_server.conf.d/\*\.conf|' $ZBXCONF_SV
 
 if [ -e $ZBXCONF_SV.d/zabbix_server_auto.conf ]; then
 	echo -e "\n\nATENTION - 010.001 - SERVER CONFIGURATION FILE EXISTS. NO CHANGES MADE"
-	echo -e "PLEASE REVIEW YOUR SERVER CONFIGURATION FILE.\n\n"
+	echo -e "PLEASE REVIEW YOUR SERVER CONFIGURATION FILE IF UPDATING.\n\n"
 	sleep 5
 else
 	cat > $ZBXCONF_SV.d/zabbix_server_auto.conf <<- EOF
@@ -239,15 +239,15 @@ fi
 ### 011.000 ZABBIX AGENT CONFIGURATION - START
 clear_msg "AJUSTING ZABBIX AGENT CONFIGURATION FILE..."
 
-sed -i 's|LogFile=/tmp/zabbix_agentd.log|#LogFile=/tmp/zabbix_agentd.log|' $ZBXCONF_AG
-sed -i 's|Server=127.0.0.1|#Server=127.0.0.1|' $ZBXCONF_AG
-sed -i 's|ServerActive=127.0.0.1|#ServerActive=127.0.0.1|' $ZBXCONF_AG
-sed -i 's|Hostname=Zabbix\ server|#Hostname=Zabbix\ server|' $ZBXCONF_AG
-sed -i 's|# Include=/usr/local/etc/zabbix_agentd.conf.d/\*\.conf|Include=/usr/local/etc/zabbix_agentd.conf.d/\*\.conf|' $ZBXCONF_AG
+sed -i 's|^LogFile=/tmp/zabbix_agentd.log|#LogFile=/tmp/zabbix_agentd.log|' $ZBXCONF_AG
+sed -i 's|^Server=127.0.0.1|#Server=127.0.0.1|' $ZBXCONF_AG
+sed -i 's|^ServerActive=127.0.0.1|#ServerActive=127.0.0.1|' $ZBXCONF_AG
+sed -i 's|^Hostname=Zabbix\ server|#Hostname=Zabbix\ server|' $ZBXCONF_AG
+sed -i 's|^# Include=/usr/local/etc/zabbix_agentd.conf.d/\*\.conf|Include=/usr/local/etc/zabbix_agentd.conf.d/\*\.conf|' $ZBXCONF_AG
 
 if [ -e $ZBXCONF_AG.d/zabbix_agent_auto.conf ]; then
 	echo -e "ATENTION - 011.001 - AGENT CONFIGURATION FILE EXISTS. NO CHANGES MADE"
-	echo -e "PLEASE REVIEW YOUR AGENT CONFIGURATION FILE.\n\n"
+	echo -e "PLEASE REVIEW YOUR AGENT CONFIGURATION FILE IF UPDATING.\n\n"
 	sleep 5
 else
 	cat > $ZBXCONF_AG.d/zabbix_agent_auto.conf <<- EOF
@@ -276,7 +276,7 @@ zabbix_agentd -c $ZBXCONF_AG
 
 
 ### DOWNLOAD FRONTEND CONFIG IF IT FAILS THEN COPY IT TO YOUR SERVER
-clear_msg "ZABBIX INSTALLTION FINISHED\n\nPROCEED TO ZABBIX WEB UI AND FOLLOW INSTRUCTIONS\nhttp://$(hostname -I | xargs)/zabbix"
+clear_msg "ZABBIX INSTALLTION FINISHED\n\nPROCEED TO ZABBIX WEB UI\nhttp://$(hostname -I | xargs)/zabbix"
 
 #mv ~/zabbix.conf.php /var/www/html/zabbix/conf/zabbix.conf.php
 #systemctl restart httpd
