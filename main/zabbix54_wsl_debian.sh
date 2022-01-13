@@ -34,11 +34,12 @@
 ### 001.002 VARIABLES
 ZBXDIR="/opt"
 ZBXVER="zabbix-5.4.9"
+ZBXVERDIR="5.4"
 ZBXCONF_SV="/usr/local/etc/zabbix_server.conf"
 ZBXCONF_AG="/usr/local/etc/zabbix_agentd.conf"
 
 GODIR="/opt"
-GOVER="go1.17.5"
+GOVER="go1.17.6"
 PHPINI="/etc/php/7.4/apache2/php.ini"
 
 ### 001.003 COLLECTING ZABBIX DB CONFIGURATION
@@ -75,7 +76,7 @@ fi
 ### 002.000 ZABBIX DOWNLOAD - START
 clear_msg "DOWNLOADING ZABBIX SOURCES..."
 
-wget -nc -O $ZBXDIR/$ZBXVER.tar.gz https://cdn.zabbix.com/zabbix/sources/stable/5.4/$ZBXVER.tar.gz
+wget -nc -O $ZBXDIR/$ZBXVER.tar.gz https://cdn.zabbix.com/zabbix/sources/stable/$ZBXVERDIR/$ZBXVER.tar.gz
 tar --skip-old-files -C $ZBXDIR/ -xzvf $ZBXDIR/$ZBXVER.tar.gz
 	RETURN=$?; error_check "002.001"
 ### 002.000 ZABBIX DOWNLOAD - END
