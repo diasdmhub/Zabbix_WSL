@@ -62,7 +62,7 @@ read -p "DB PASSWORD (default \"zabbix\"): " DBPASS
 clear_msg "PREPARING OS..."
 
 apt-get -y update && sudo apt-get -y upgrade
-apt-get -y install wget openssh-server default-mysql-client make
+apt-get -y install wget openssh-server default-mysql-client make tcpdump netcat net-tools traceroute
 	RETURN=$?; error_check "001.004"
 
 ### 001.005 CHECK IF ZABBIX DB EXISTS
