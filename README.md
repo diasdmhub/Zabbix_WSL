@@ -1,6 +1,6 @@
 # Zabbix WSL for Debian based distributions
 
-#### Zabbix Installation script for Windows WSL Debian based distributions
+#### Zabbix Sources Installation script for Windows WSL Debian based distributions
 <BR>
 
 ### TESTED
