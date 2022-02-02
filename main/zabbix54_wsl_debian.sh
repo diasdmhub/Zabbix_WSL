@@ -70,6 +70,9 @@ if [ -z "$(mysql -NB -h${DBHOST} -u${DBUSER} -p${DBPASS} -e "SHOW DATABASES LIKE
 	RETURN=$?; error_check "001.004 - ZABBIX DATABASE WAS NOT FOUND OR ACCESS IS INVALID"
 fi
 
+pkill zabbix_server
+pkill zabbix_agent
+
 ### 001.000 OS ENVIROMENT - END
 
 
