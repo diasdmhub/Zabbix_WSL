@@ -1,22 +1,23 @@
 #!/bin/bash
 
-### ZABBIX INSTALLATION FROM SOURCES FOR WINDOWS WSL
+### ZABBIX INSTALLATION FROM SOURCES FOR WINDOWS WSL DEBIAN BASED
 ### version beta 1
 ### by diasdm
 ### https://www.zabbix.com/documentation/current/manual/installation/install
 
 ### REQUIREMENTS
-#!!-- IF UPGRADING FROM A PACKAGES INSTALLATION, REMOVE ALL ZABBIX PACKAGES FIRST.
-#!!-- THIS IS AN APACHE2 AND MYSQL/MARIADB INSTALLATION.
-#!!-- MOST COMMANDS REQUIRE ELEVATED PRIVILEGES,
-#!!-- IT IS SUGGESTED TO START THE SCRIPT AS ROOT.
-#!!-- INTERNET ACCESS IS REQUIRED TO DOWNLOAD ZABBIX AND GO (Go enviroment as well).
+#!!-- IF UPGRADING FROM A PACKAGES INSTALLATION, REMOVE ALL ZABBIX PACKAGES FIRST
+#!!-- THIS IS AN APACHE2 AND MYSQL/MARIADB INSTALLATION
+#!!-- MOST COMMANDS REQUIRE ELEVATED PRIVILEGES, IT IS SUGGESTED TO START THE SCRIPT AS ROOT
+#!!-- INTERNET ACCESS IS REQUIRED TO DOWNLOAD ZABBIX AND GO (Go enviroment as well)
 
 ### LIMITATIONS
-#!!-- MADE FOR DEBIAN BASED WSL DISTRIBUTIONS.
-#!!-- FOR NEW INSTALLATIONS, ZABBIX DB MUST BE PREVIOUSLY INSTALLED AND CREATED, BUT NOT OPULATED!
-#!!-- RE-EXECUTION OF THIS SCRIPT IS CAPABLE OF UPDATING ZABBIX.
-#!!-- IT IS REQUIRED TO UPDATE MANUALLY ZABBIX AND GO LINKS, AND PHP DIRECTORY
+#!!-- MADE FOR DEBIAN BASED WSL DISTRIBUTIONS
+#!!-- FOR NEW INSTALLATIONS, ZABBIX DB MUST BE PREVIOUSLY INSTALLED AND CREATED, BUT NOT POPULATED!
+#!!-- RE-EXECUTION OF THIS SCRIPT IS CAPABLE OF UPDATING ZABBIX
+#!!-- IT IS REQUIRED TO UPDATE MANUALLY ZABBIX AND GO LINKS, AND PHP DIRECTORY, IF THEY ARE CHANGED
+#!!-- 						SOME VARIABLES ARE PROVIDED FOR THAT
+#!!-- WHATCH FOR "/opt" CLUTTERING
 
 
 ### 001.000 OS ENVIROMENT - START
@@ -32,15 +33,15 @@
 	function clear_msg() { clear; echo -e "$1\n"; sleep 2; }
 
 ### 001.002 VARIABLES
-ZBXDIR="/opt"
-ZBXVER="zabbix-5.4.9"
-ZBXVERDIR="5.4"
-ZBXCONF_SV="/usr/local/etc/zabbix_server.conf"
-ZBXCONF_AG="/usr/local/etc/zabbix_agentd.conf"
+ZBXDIR="/opt"                                   # ZABBIX SOURCES DOWNLOAD DIR
+ZBXVER="zabbix-6.0.0"                           # ZABBIX VERSION
+ZBXVERDIR="6.0"                                 # ZABBIX REPOSITORY DIR WITHIN DOWNLOAD LINK
+ZBXCONF_SV="/usr/local/etc/zabbix_server.conf"  # ZABBIX DEFAULT SERVER CONFIGURATION PATH
+ZBXCONF_AG="/usr/local/etc/zabbix_agentd.conf"  # ZABBIX DEFAULT AGENT CONFIGURATION PATH
 
-GODIR="/opt"
-GOVER="go1.17.6"
-PHPINI="/etc/php/7.4/apache2/php.ini"
+GODIR="/opt"                                    # GO DOWNLOAD DIR
+GOVER="go1.17.7"                                # GO VERSION
+PHPINI="/etc/php/7.4/apache2/php.ini"           # PHP DEFAULT CONFIGURATION FILE
 
 ### 001.003 COLLECTING ZABBIX DB CONFIGURATION
 clear_msg "ZABBIX SERVER DB CONFIGURATION..."
@@ -67,7 +68,7 @@ apt-get -y install wget openssh-server default-mysql-client make tcpdump netcat 
 
 ### 001.005 CHECK IF ZABBIX DB EXISTS
 if [ -z "$(mysql -NB -h${DBHOST} -u${DBUSER} -p${DBPASS} -e "SHOW DATABASES LIKE '${DBNAME}';")" ]; then 
-	RETURN=$?; error_check "001.004 - ZABBIX DATABASE WAS NOT FOUND OR ACCESS IS INVALID"
+	RETURN=1; error_check "001.004 - ZABBIX DATABASE WAS NOT FOUND OR ACCESS IS INVALID"
 fi
 
 pkill zabbix_server
@@ -94,10 +95,13 @@ wget -nc -O $GODIR/$GOVER.linux-amd64.tar.gz https://go.dev/dl/$GOVER.linux-amd6
 rm -rf /usr/local/go && tar --skip-old-files -C /usr/local -xzvf $GODIR/$GOVER.linux-amd64.tar.gz
 	RETURN=$?; error_check "003.001"
 
-echo -e "\n# GO PATH" >> /etc/profile					# POSSIBLE CLUTTER OF PROFILE FILE
-echo 'export PATH=$PATH:/usr/local/go/bin' >> /etc/profile		# TO CORRECT LATER
-	RETURN=$?; error_check "003.002 - You need to be \"root\""
-source /etc/profile
+if [ -z `grep -e 'export PATH=$PATH:/usr/local/go/bin' /etc/profile` ]; then
+	echo -e "\n# GO PATH" >> /etc/profile
+	echo 'export PATH=$PATH:/usr/local/go/bin' >> /etc/profile
+		RETURN=$?; error_check "003.002 - You need to be \"root\""
+	source /etc/profile
+fi
+
 ### 003.000 GO INSTALL - END
 
 
@@ -188,7 +192,7 @@ mkdir -p /var/www/html/zabbix/
 	RETURN=$?; error_check "009.001"
 rsync -av $ZBXDIR/$ZBXVER/ui/* /var/www/html/zabbix/
 	RETURN=$?; error_check "009.002"
-chown -R zabbix:zabbix /var/www/html/zabbix/
+chown -R www-data:www-data /var/www/html/zabbix/
 	RETURN=$?; error_check "009.003"
 
 sed -i 's|post_max_size = 8M|post_max_size = 16M|' $PHPINI
@@ -268,8 +272,8 @@ else
 		Server=127.0.0.1
 		Hostname=$HOSTNAME
 	EOF
+		RETURN=$?; error_check "011.001"
 fi
-	RETURN=$?; error_check "011.002"
 ### 011.000 ZABBIX AGENT CONFIGURATION - END
 
 
@@ -280,7 +284,7 @@ zabbix_server -c $ZBXCONF_SV
 	RETURN=$?; error_check "012.001 - ZABBIX SERVER START FAILED"
 zabbix_agentd -c $ZBXCONF_AG
 	RETURN=$?; error_check "012.002 - ZABBIX AGENT START FAILED"
-### 011.000 ZABBIX BACKGROUND START - END
+### 012.000 ZABBIX BACKGROUND START - END
 
 
 ### DOWNLOAD FRONTEND CONFIG IF IT FAILS THEN COPY IT TO YOUR SERVER
