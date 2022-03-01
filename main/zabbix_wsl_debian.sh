@@ -34,7 +34,7 @@
 
 ### 001.002 VARIABLES
 ZBXDIR="/opt"                                   # ZABBIX SOURCES DOWNLOAD DIR
-ZBXVER="zabbix-6.0.0"                           # ZABBIX VERSION
+ZBXVER="zabbix-6.0.1"                           # ZABBIX VERSION
 ZBXVERDIR="6.0"                                 # ZABBIX REPOSITORY DIR WITHIN DOWNLOAD LINK
 ZBXCONF_SV="/usr/local/etc/zabbix_server.conf"  # ZABBIX DEFAULT SERVER CONFIGURATION PATH
 ZBXCONF_AG="/usr/local/etc/zabbix_agentd.conf"  # ZABBIX DEFAULT AGENT CONFIGURATION PATH
