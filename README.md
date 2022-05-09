@@ -1,6 +1,6 @@
 # Zabbix WSL for Ubuntu/Debian based distributions
 
-#### Zabbix Sources Installation script for Windows WSL Debian based distributions
+#### Zabbix Sources Installation script for Windows WSL Ubuntu/Debian based distributions
 <BR>
 
 ### REQUIREMENTS
