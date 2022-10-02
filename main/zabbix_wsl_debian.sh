@@ -34,14 +34,14 @@
 
 ### 001.002 VARIABLES
 ZBXDIR="/opt"                                   # ZABBIX SOURCES DOWNLOAD DIR
-ZBXVER="zabbix-6.0.4"                           # ZABBIX VERSION
+ZBXVER="zabbix-6.0.9"                           # ZABBIX VERSION
 ZBXVERDIR="6.0"                                 # ZABBIX REPOSITORY DIR WITHIN DOWNLOAD LINK
 ZBXCONF_SV="/usr/local/etc/zabbix_server.conf"  # ZABBIX DEFAULT SERVER CONFIGURATION PATH
 ZBXCONF_AG="/usr/local/etc/zabbix_agentd.conf"  # ZABBIX DEFAULT AGENT CONFIGURATION PATH
 
 GODIR="/opt"                                    # GO DOWNLOAD DIR
-GOVER="go1.18.1"                                # GO VERSION
-PHPINI="/etc/php/7.4/apache2/php.ini"           # PHP DEFAULT CONFIGURATION FILE
+GOVER="go1.19.1"                                # GO VERSION
+PHPINI="/etc/php/*/apache2/php.ini"		# PHP DEFAULT CONFIGURATION FILE
 
 ### 001.003 COLLECTING ZABBIX DB CONFIGURATION
 clear_msg "ZABBIX SERVER DB CONFIGURATION..."
@@ -63,7 +63,7 @@ read -p "DB PASSWORD (default \"zabbix\"): " DBPASS
 clear_msg "PREPARING OS..."
 
 apt-get -y update && sudo apt-get -y upgrade
-apt-get -y install wget openssh-server default-mysql-client make tcpdump netcat net-tools traceroute
+apt-get -y install wget openssh-server make tcpdump netcat net-tools traceroute mariadb-client # default-mysql-client
 	RETURN=$?; error_check "001.004"
 
 ### 001.005 CHECK IF ZABBIX DB EXISTS
@@ -106,7 +106,7 @@ fi
 
 
 ### 004.000 ZABBIX DB SCHEMA - START
-clear_msg "CREATING ZABBIX DB SCHEMA..."
+clear_msg "CREATING ZABBIX DB SCHEMA... PLEASE WAIT"
 
 if [ -z "$(mysql -NB -h${DBHOST} -u${DBUSER} -p${DBPASS} ${DBNAME} -e "SHOW TABLES;")" ]; then
 	mysql -h${DBHOST} -u${DBUSER} -p${DBPASS} ${DBNAME} < $ZBXDIR/$ZBXVER/database/mysql/schema.sql
@@ -176,7 +176,7 @@ cd $ZBXDIR/$ZBXVER/
 	    --with-openssl \
 	    --with-ldap \
 	    --with-ssh2
-	RETURN=$?; error_check "008.001 - Configuration error. Check \"/$ZBXDIR/$ZBXVER/config.log\"."
+	RETURN=$?; error_check "008.001 - Configuration error. Check \"$ZBXDIR/$ZBXVER/config.log\"."
 
 clear_msg "COMPILING ZABBIX..."
 
