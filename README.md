@@ -25,8 +25,9 @@
   - Check **[Zabbix DB configuration](https://www.zabbix.com/download?zabbix=6.2&os_distribution=debian&os_version=10_buster&db=mysql)**
 <BR>
 
-**3. Clone this repository or copy the main script**
-  - Clone with Git: `git clone `
+**3. Clone this repository or download the main script**
+  - Clone with Git: `git clone https://github.com/diasdmhub/Zabbix_WSL.git`
+  - Or download the main script to your WSL distro: `wget `
 
 ### OBSERVATIONS
 - MADE FOR DEBIAN/UBUNTU BASED WSL DISTRIBUTIONS
