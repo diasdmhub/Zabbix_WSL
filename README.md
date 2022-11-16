@@ -9,7 +9,7 @@
 - IF RUNNING FOR THE FIRST TIME, **ZABBIX DB MUST BE PREVIOUSLY INSTALLED AND CREATED**, BUT NOT POPULATED!
 - MOST COMMANDS REQUIRE ELEVATED PRIVILEGES, IT IS SUGGESTED TO **START THE SCRIPT AS ROOT**
 - INTERNET ACCESS IS REQUIRED TO DOWNLOAD ZABBIX AND GO LANG (Go enviroment as well)
-- IT IS REQUIRED TO UPDATE MANUALLY ZABBIX AND GO LINKS, AND PHP DIRECTORY WHEN NEW VERSIONS ARE RELEASED. THESE VALUES ARE SET INTO VARIABLES AT THE BEGINNING OF THE SCRIPT
+- IT IS SUGGESTED TO UPDATE MANUALLY ZABBIX, GO LINKS AND PHP DIRECTORY WHEN NEW VERSIONS ARE RELEASED. THESE VALUES ARE SET INTO VARIABLES AT THE BEGINNING OF THE SCRIPT
 ---
 <BR>
 
@@ -21,8 +21,8 @@
 <BR>
 
 **2. Install your prefered MySQL like DBMS.**
->  - Usually distros repositorys offer MySQL like DB. Eg: *`apt install mariadb-server`*
->  - Check for **[Zabbix DB requirements](https://www.zabbix.com/documentation/current/en/manual/installation/requirements)**
+>  - Usually distros repositorys offer MySQL like DBMS. Eg: *`apt install mariadb-server`*
+>  - Check **[Zabbix DB requirements](https://www.zabbix.com/documentation/current/en/manual/installation/requirements)**
 >  - Check **[Zabbix DB configuration](https://www.zabbix.com/download?zabbix=6.2&os_distribution=debian&os_version=10_buster&db=mysql)**
 <BR>
 
